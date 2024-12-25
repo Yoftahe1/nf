@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { Frown, Smile } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import logo from '@/assets/logo.png';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import TestItem from '@/components/lesson/TestItem';
-import { courseApi } from "@/state/services/course";
+// import { courseApi } from "@/state/services/course";
 import LessonItem from '@/components/lesson/LessonItem';
 import StepCounter from '@/components/lesson/StepCounter';
 import { useGetLessonQuery } from '@/state/services/course';
@@ -16,7 +16,7 @@ const Lesson = () => {
   const { toast } = useToast();
   const { courseId, lessonId, stepNo, totalSteps } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { data, isLoading, isSuccess, isError } = useGetLessonQuery({ lessonId: `${lessonId}`, stepNo: `${stepNo}` });
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Lesson = () => {
               <p className="text-md text-muted-foreground">Why stop now? Keep learning.</p>
               <Button
                 onClick={() => {
-                  dispatch(courseApi.util.invalidateTags([{ type: 'Units', id: courseId }]));
+                  // dispatch(courseApi.util.invalidateTags([{ type: 'Units', id: courseId }]));
                   navigate(`/app/learn/course/${courseId}`);
                 }}
               >
