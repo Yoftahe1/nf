@@ -22,7 +22,7 @@ const Lesson = () => {
   useEffect(() => {
     if (isError) {
       toast({
-        title: 'Fetch lesson failed',
+        title: 'Fetch lesson faileds',
         description: 'An unexpected error occurred. Please try again.',
       });
     }
