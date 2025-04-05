@@ -2,32 +2,40 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import Matcher from './Matcher';
 import { cn } from '@/lib/utils';
+import { StateObject } from '@/types';
 import StepControl from './StepControl';
 import { useToast } from '@/hooks/use-toast';
-import TestLessonContent from './TestLessonContent';
+import { RootState } from '@/state/store';
 import { useCheckAnswerMutation } from '@/state/services/course';
 import { setUser } from '@/state/slice/auth';
-import { RootState } from '@/state/store';
 
-interface TestItem {
-  data: any;
+interface QuestionI {
+  id: string;
+  options: any;
+  type: string;
+  content: string;
+  position: string;
+  state: StateObject;
+  difficulty: number;
 }
-
-const TestItem = ({ data }: TestItem) => {
+const Question = ({ content, state, position, type, options, id, difficulty }: QuestionI) => {
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { courseId, unitId, lessonId, totalSteps, stepNo } = useParams();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | undefined>();
   const [checkAnswerMutation, { isLoading: isSubmitting }] = useCheckAnswerMutation();
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const user = useSelector((state: RootState) => state.auth.user);
-  const navigate = useNavigate();
+
   async function checkAnswer() {
     try {
-      const result = await checkAnswerMutation({ answer: selectedOption, testId: `${data!.id}`, lessonId });
-      setIsCorrect(result.data.isCorrect);
-      if (result.data.isCorrect) {
+      const { data } = await checkAnswerMutation({ answer: selectedOption, testId: `${id}`, lessonId });
+      setIsCorrect(data.isCorrect);
+      if (data.isCorrect) {
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
@@ -46,7 +54,7 @@ const TestItem = ({ data }: TestItem) => {
           phone_number: user!.phone_number,
           profile_pic: user!.profile_pic,
           address: user!.address,
-          xp: user!.xp + data.difficulty * 10,
+          xp: user!.xp + difficulty * 10,
           current_streak: currenStreak,
           highest_streak: currenStreak > user!.highest_streak ? currenStreak : user!.highest_streak,
           last_answered: formattedToday,
@@ -60,6 +68,7 @@ const TestItem = ({ data }: TestItem) => {
       });
     }
   }
+
   async function nextQuestion() {
     setIsCorrect(null);
     setSelectedOption(undefined);
@@ -67,41 +76,34 @@ const TestItem = ({ data }: TestItem) => {
     navigate(`/app/learn/course/${courseId}/unit/${unitId}/lesson/${lessonId}/totalSteps/${totalSteps}/step/${Number(stepNo) + 1}`);
   }
 
-  console.log(data)
   return (
-    <>
-      {data && (
-        <>
-          <div className="p-2 rounded-md border border-input shadow-md">
-            <TestLessonContent question={data.question} hiddenWord={'___'} />
-
-            <p className="font-semibold text-xl text-primary my-6">ከመሃል የጎደለው ቃል ምንድን ነው?</p>
-
-            <MultipleOptions
-              selectedOption={selectedOption}
-              isCorrect={isCorrect}
-              setSelectedOption={(option) => {
-                setIsCorrect(null);
-                setSelectedOption(option);
-              }}
-              options={Object.values(data.choice)}
-            />
-          </div>
-          <StepControl
-            onContinue={nextQuestion}
-            continueDisabled={!isCorrect}
-            isSubmitting={isSubmitting}
-            isTest={true}
-            checkAnswerDisabled={!!!selectedOption}
-            checkAnswer={checkAnswer}
-          />
-        </>
-      )}
-    </>
+    <div>
+      <div className="rounded-md border border-primary ">
+        <Matcher content={content} state={state} position={position} type={type} />
+      </div>
+      <p className="font-semibold text-xl text-primary my-6">{type === 'fill' ? 'ከመሃል የጎደለው ቃል ምንድን ነው?' : 'በትክክል የተፃፈው ቃል የትኛው ነው?'}</p>
+      <MultipleOptions
+        selectedOption={selectedOption}
+        isCorrect={isCorrect}
+        setSelectedOption={(option) => {
+          setIsCorrect(null);
+          setSelectedOption(option);
+        }}
+        options={Object.values(options)}
+      />
+      <StepControl
+        onContinue={nextQuestion}
+        continueDisabled={!isCorrect}
+        isSubmitting={isSubmitting}
+        isTest={true}
+        checkAnswerDisabled={!!!selectedOption}
+        checkAnswer={checkAnswer}
+      />
+    </div>
   );
 };
 
-export default TestItem;
+export default Question;
 
 export function MultipleOptions({
   options,
@@ -109,7 +111,7 @@ export function MultipleOptions({
   setSelectedOption,
   isCorrect,
 }: {
-  options: string[];
+  options: { content: string; state: StateObject }[];
   isCorrect: boolean | null;
   selectedOption: string | undefined;
   setSelectedOption: (option: string) => void;
@@ -117,36 +119,38 @@ export function MultipleOptions({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {options.map((o, i) => (
-        <Option key={i} option={o} selectedOption={selectedOption} setSelectedOption={setSelectedOption} isCorrect={isCorrect} />
+        <Option key={i} index={i} option={o} selectedOption={selectedOption} setSelectedOption={setSelectedOption} isCorrect={isCorrect} />
       ))}
     </div>
   );
 }
 
 function Option({
+  index,
   option,
   selectedOption,
   setSelectedOption,
   isCorrect,
 }: {
-  option: string;
+  index: number;
+  option: { content: string; state: StateObject };
   selectedOption: string | undefined;
   setSelectedOption: (option: string) => void;
   isCorrect: boolean | null;
 }) {
-  const isSelected = selectedOption === option;
+  const isSelected = selectedOption === index.toString();
 
   return (
     <div
       className={cn(
-        'flex items-center p-2  rounded-md border hover:border-primary hover:text-primary transition-all hover:cursor-pointer hover:bg-transparent h-12',
-        isSelected && isCorrect && 'border-green-500 text-green-500',
-        isSelected && !isCorrect && 'border-red-500  text-red-500',
-        isSelected && isCorrect === null && 'border-primary text-primary',
+        'flex items-center rounded-md border hover:border-primary transition-all hover:cursor-pointer hover:bg-transparent h-20',
+        isSelected && isCorrect && 'border-green-500 ',
+        isSelected && !isCorrect && 'border-red-500  ',
+        isSelected && isCorrect === null && 'border-primary',
       )}
-      onClick={() => setSelectedOption(option)}
+      onClick={() => setSelectedOption(`${index}`)}
     >
-      <p>{option}</p>
+      <Matcher content={option.content} state={option.state} />
     </div>
   );
 }

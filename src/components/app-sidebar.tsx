@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { LifeBuoy, BookOpenText, Send, BarChart } from 'lucide-react';
+import { LifeBuoy, BookOpenText, Send, BarChart,SquarePen } from 'lucide-react';
 
 import icon from '@/assets/icon.svg';
 import { NavMain } from '@/components/nav-main';

@@ -19,8 +19,8 @@ export interface UnitsI {
 
 export interface Lesson {
   id: string;
-  lesson_no: number;
-  lesson_title: string;
+  file_no: number;
+  file_name: string;
   lesson_body: any;
   created_at: string;
   is_completed: boolean;
@@ -70,7 +70,7 @@ export const courseApi = createApi({
     getUnits: builder.query<UnitsI[], string>({
       query: (courseId) => {
         return {
-          url: `course/${courseId}/units`,
+          url: `unit/user/course/${courseId}`,
         };
       },
       keepUnusedDataFor: 0,
@@ -86,30 +86,30 @@ export const courseApi = createApi({
     getLesson: builder.query<any, { lessonId: string; stepNo: string }>({
       query: ({ lessonId, stepNo }) => {
         return {
-          url: `lesson/${lessonId}/${stepNo}`,
+          url: `file/user/lesson/${lessonId}/step/${stepNo}`,
         };
       },
     }),
     completeLesson: builder.mutation({
       query: (lessonId) => {
         return {
-          url: `/lesson/complete/${lessonId}`,
+          url: `/file/complete/${lessonId}`,
           method: 'POST',
         };
       },
     }),
-    getQuiz: builder.query<Test[], null>({
+    getQuiz: builder.query<any, null>({
       query: () => {
         return {
-          url: `test/quiz`,
+          url: `question/quiz`,
         };
       },
     }),
     checkAnswer: builder.mutation({
       query: ({ answer, testId, lessonId }) => {
         return {
-          url: `/test/checkAnswer/${testId}/lesson/${lessonId}`,
-          body: { answer },
+          url: `/question/${testId}/checkAnswer`,
+          body: { answer, lessonId },
           method: 'POST',
         };
       },

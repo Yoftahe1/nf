@@ -32,11 +32,11 @@ export default function Course() {
 
             <div className="my-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
               {lessons &&
-                lessons.map(({ id, lesson_title, step, total_step, isLocked }) => (
+                lessons.map(({ id, file_name, step, total_step, isLocked }) => (
                   <UnitItem
                     key={id}
                     isLocked={isLocked}
-                    lessonTitle={lesson_title}
+                    lessonTitle={file_name}
                     unitId={id}
                     lessonId={id}
                     step={step || 0}

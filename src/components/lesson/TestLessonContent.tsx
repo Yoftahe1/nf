@@ -1,6 +1,6 @@
 import logo from '../../assets/logo.png';
 
-export default function TestLessonContent({ question, hiddenWord }: { question: string;  hiddenWord?: string }) {
+export default function TestLessonContent({ question, hideSymbol, hiddenWord }: { question: string; hideSymbol?: boolean; hiddenWord?: string }) {
   const lines: string[] = question.split('\\n');
 
   return (

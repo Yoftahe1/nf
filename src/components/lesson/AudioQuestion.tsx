@@ -3,26 +3,28 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 import StepControl from './StepControl';
-import { useToast } from '@/hooks/use-toast';
-import TestLessonContent from './TestLessonContent';
-import { useCheckAnswerMutation } from '@/state/services/course';
-import { setUser } from '@/state/slice/auth';
 import { RootState } from '@/state/store';
+import { useToast } from '@/hooks/use-toast';
+import { setUser } from '@/state/slice/auth';
+import { useCheckAnswerMutation } from '@/state/services/course';
 
-interface TestItem {
+interface AudioQuestionI {
   data: any;
 }
 
-const TestItem = ({ data }: TestItem) => {
+const AudioQuestion = ({ data }: AudioQuestionI) => {
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { courseId, unitId, lessonId, totalSteps, stepNo } = useParams();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | undefined>();
   const [checkAnswerMutation, { isLoading: isSubmitting }] = useCheckAnswerMutation();
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const user = useSelector((state: RootState) => state.auth.user);
-  const navigate = useNavigate();
+
   async function checkAnswer() {
     try {
       const result = await checkAnswerMutation({ answer: selectedOption, testId: `${data!.id}`, lessonId });
@@ -67,15 +69,17 @@ const TestItem = ({ data }: TestItem) => {
     navigate(`/app/learn/course/${courseId}/unit/${unitId}/lesson/${lessonId}/totalSteps/${totalSteps}/step/${Number(stepNo) + 1}`);
   }
 
-  console.log(data)
   return (
     <>
       {data && (
         <>
           <div className="p-2 rounded-md border border-input shadow-md">
-            <TestLessonContent question={data.question} hiddenWord={'___'} />
+            <div className="abyssinica-sil-regular relative w-full rounded-sm border border-primary flex flex-col items-center">
+              <img src={logo} className="h-40" alt="" />
 
-            <p className="font-semibold text-xl text-primary my-6">ከመሃል የጎደለው ቃል ምንድን ነው?</p>
+            </div>
+
+            <p className="font-semibold text-xl text-primary my-6">በትክክል የተጻፈው ቃል ምንድን ነው?</p>
 
             <MultipleOptions
               selectedOption={selectedOption}
@@ -101,7 +105,7 @@ const TestItem = ({ data }: TestItem) => {
   );
 };
 
-export default TestItem;
+export default AudioQuestion;
 
 export function MultipleOptions({
   options,
@@ -149,4 +153,7 @@ function Option({
       <p>{option}</p>
     </div>
   );
+}
+function checkAnswerMutation(arg0: { answer: string | undefined; testId: string; lessonId: any }) {
+  throw new Error('Function not implemented.');
 }

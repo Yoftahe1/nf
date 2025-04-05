@@ -3,27 +3,41 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useToast } from '@/hooks/use-toast';
 import StepControl from './lesson/StepControl';
-import { MultipleOptions } from './lesson/TestItem';
 import TestLessonContent from './lesson/TestLessonContent';
 import { Test, useCheckAnswerMutation } from '@/state/services/course';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { setUser } from '@/state/slice/auth';
 import { RootState } from '@/state/store';
+import { MultipleOptions } from './lesson/Question';
+import Matcher from './lesson/Matcher';
+import { StateObject } from '@/types';
 
-export default function Quiz({ data }: { data: Test }) {
+interface QuizI {
+  id: string;
+  options: any;
+  type: string;
+  content: string;
+  position: string;
+  state: StateObject;
+  difficulty: number;
+  lessonId:string
+}
+
+export default function Quiz({ content, state, position, type, options, id, difficulty,lessonId }: QuizI) {
   const { toast } = useToast();
   const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(true);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | undefined>();
   const [checkAnswerMutation, { isLoading: isSubmitting }] = useCheckAnswerMutation();
-  const user = useSelector((state: RootState) => state.auth.user);
 
   async function checkAnswer() {
     try {
-      const result = await checkAnswerMutation({ answer: selectedOption, testId: `${data!.id}`, lessonId: `${data!.lesson_id}` });
-      setIsCorrect(result.data.isCorrect);
-      if (result.data.isCorrect) {
+      const { data } = await checkAnswerMutation({ answer: selectedOption, testId: `${id}`, lessonId: `${lessonId}` });
+      setIsCorrect(data.isCorrect);
+      if (data.isCorrect) {
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
@@ -42,7 +56,7 @@ export default function Quiz({ data }: { data: Test }) {
           phone_number: user!.phone_number,
           profile_pic: user!.profile_pic,
           address: user!.address,
-          xp: user!.xp + data.difficulty * 10,
+          xp: user!.xp + difficulty * 10,
           current_streak: currenStreak,
           highest_streak: currenStreak > user!.highest_streak ? currenStreak : user!.highest_streak,
           last_answered: formattedToday,
@@ -69,9 +83,9 @@ export default function Quiz({ data }: { data: Test }) {
         <DialogHeader>
           <DialogTitle>Quiz</DialogTitle>
         </DialogHeader>
-        <TestLessonContent question={data.question} hiddenWord={'___'} />
+        <Matcher content={content} state={state} position={position} type={type} />
 
-        <DialogDescription className="font-semibold text-xl text-primary my-3">ከመሃል የጎደለው ቃል ምንድን ነው?</DialogDescription>
+        <DialogDescription className="font-semibold text-xl text-primary my-3">{type === 'fill' ? 'ከመሃል የጎደለው ቃል ምንድን ነው?' : 'በትክክል የተፃፈው ቃል የትኛው ነው?'}</DialogDescription>
         <MultipleOptions
           selectedOption={selectedOption}
           isCorrect={isCorrect}
@@ -79,7 +93,7 @@ export default function Quiz({ data }: { data: Test }) {
             setIsCorrect(null);
             setSelectedOption(option);
           }}
-          options={Object.values(data.choice)}
+          options={Object.values(options)}
         />
         <StepControl
           onContinue={onContinue}

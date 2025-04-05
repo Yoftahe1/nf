@@ -38,7 +38,7 @@ const formSchema = z.object({
 const EditProfile = () => {
   const { toast } = useToast();
   const dispatch = useDispatch();
-  const [_, setCountryName] = useState<string>('');
+  const [countryName, setCountryName] = useState<string>('');
   const user = useSelector((state: RootState) => state.auth.user);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 

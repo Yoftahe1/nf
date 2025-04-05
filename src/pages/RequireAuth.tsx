@@ -13,7 +13,7 @@ const RequireAuth = () => {
 
   return token ? (
     <>
-      {isSuccess && data.length > 0 && <Quiz data={data[0]} />}
+      {isSuccess && data.length > 0 && <Quiz id={data[0].id} difficulty={data[0].difficulty} content={data[0].content} state={data[0].state} position={data[0].position} type={data[0].type} options={data[0].options} lessonId={data[0].file_id}/>}
       <Layout>
         <Outlet />
       </Layout>
