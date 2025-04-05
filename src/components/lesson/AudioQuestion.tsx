@@ -76,7 +76,6 @@ const AudioQuestion = ({ data }: AudioQuestionI) => {
           <div className="p-2 rounded-md border border-input shadow-md">
             <div className="abyssinica-sil-regular relative w-full rounded-sm border border-primary flex flex-col items-center">
               <img src={logo} className="h-40" alt="" />
-
             </div>
 
             <p className="font-semibold text-xl text-primary my-6">በትክክል የተጻፈው ቃል ምንድን ነው?</p>
@@ -154,6 +153,6 @@ function Option({
     </div>
   );
 }
-function checkAnswerMutation(arg0: { answer: string | undefined; testId: string; lessonId: any }) {
-  throw new Error('Function not implemented.');
-}
+// function checkAnswerMutation(arg0: { answer: string | undefined; testId: string; lessonId: any }) {
+//   throw new Error('Function not implemented.');
+// }

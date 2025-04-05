@@ -8,10 +8,7 @@ import { Button } from '@/components/ui/button';
 import LessonItem from '@/components/lesson/LessonItem';
 import StepCounter from '@/components/lesson/StepCounter';
 import { useGetLessonQuery } from '@/state/services/course';
-import TextQuestion from '@/components/lesson/TextQuestion';
-import AudioQuestion from '@/components/lesson/AudioQuestion';
 import Question from '@/components/lesson/Question';
-import { date } from 'zod';
 
 const Lesson = () => {
   const { toast } = useToast();

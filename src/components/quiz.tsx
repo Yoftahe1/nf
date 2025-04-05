@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useToast } from '@/hooks/use-toast';
 import StepControl from './lesson/StepControl';
-import TestLessonContent from './lesson/TestLessonContent';
-import { Test, useCheckAnswerMutation } from '@/state/services/course';
+import {  useCheckAnswerMutation } from '@/state/services/course';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { setUser } from '@/state/slice/auth';
 import { RootState } from '@/state/store';

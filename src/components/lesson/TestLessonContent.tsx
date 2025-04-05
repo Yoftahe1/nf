@@ -3,6 +3,7 @@ import logo from '../../assets/logo.png';
 export default function TestLessonContent({ question, hideSymbol, hiddenWord }: { question: string; hideSymbol?: boolean; hiddenWord?: string }) {
   const lines: string[] = question.split('\\n');
 
+  console.log(hideSymbol);
   return (
     <div>
       <div className="rounded-md">

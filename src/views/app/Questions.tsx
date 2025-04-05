@@ -4,10 +4,10 @@ import { Frown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 import { toast } from '@/hooks/use-toast';
-import { useGetTestsQuery } from '@/state/services/course';
+import { useGetQuizQuery } from '@/state/services/course';
 
 const Questions = () => {
-  const { data, isLoading, isSuccess, isError } = useGetTestsQuery(null);
+  const { data, isLoading, isSuccess, isError } = useGetQuizQuery(null);
 
   useEffect(() => {
     if (isError) {
@@ -21,14 +21,14 @@ const Questions = () => {
   return (
     <div className="flex flex-col gap-8 h-full">
       {isSuccess &&
-        data.map((lesson, index) => (
+        data.map((lesson: any, index: number) => (
           <div key={index} className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <p className="text-lg">{lesson.lesson_title}</p>
               <p className="text-xs text-gray-500">5/10</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 ">
-              {lesson.tests.map((question, index) => (
+              {lesson.tests.map((question: any, index: any) => (
                 <Question key={index} questionNo={index} isCompleted={question.is_answered} />
               ))}
             </div>
